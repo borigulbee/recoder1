@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>우리 반 리코더 급수제 인증 현황표</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Pretendard & Noto Sans KR 웹폰트 -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', 'Noto Sans KR', 'sans-serif'],
+          },
+          colors: {
+            pastelGreen: '#e2efd9',
+            pastelGreenDark: '#c5e0b4',
+            recorderBody: '#fdf0d5',
+            recorderStroke: '#6b5e51',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+      background-color: #f4f8f1;
+      color: #2d3436;
+    }
+
+    /* 커스텀 스크롤바 */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #eef4ea;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #b8cfa8;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #9bb888;
+    }
+
+    /* 체크 셀 애니메이션 */
+    .belt-btn {
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .belt-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* 인쇄 최적화 스타일 */
+    @media print {
+      body {
+        background-color: white !important;
+        color: black !important;
+        font-size: 11px !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      .shadow-sm, .shadow-md, .shadow-lg {
+        box-shadow: none !important;
+      }
+      .overflow-x-auto {
+        overflow: visible !important;
+      }
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+      }
+      th, td {
+        border: 1px solid #cbd5e1 !important;
+        padding: 4px 6px !important;
+      }
+      .sticky-col {
+        position: static !important;
+      }
+      @page {
+        size: A4 landscape;
+        margin: 10mm;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- 상단 헤더 -->
+  <header class="bg-gradient-to-r from-[#d8ebd0] via-[#e4f2de] to-[#d8ebd0] border-b border-[#c2dcb6] sticky top-0 z-30 shadow-sm no-print">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <!-- 리코더 미니 아이콘 -->
+        <div class="w-11 h-11 rounded-2xl bg-[#fdf0d5] border-2 border-[#7c6d5e] flex items-center justify-center shadow-sm shrink-0">
+          <svg class="w-7 h-7 text-[#5c4d3c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18.5 2.5L21.5 5.5L7.5 19.5L4.5 16.5L18.5 2.5Z" fill="#fde68a" stroke="#6b5e51"/>
+            <path d="M4.5 16.5L2.5 20.5L3.5 21.5L7.5 19.5" stroke="#6b5e51"/>
+            <line x1="15" y1="6" x2="18" y2="9" stroke="#ef4444" stroke-width="2.5"/>
+            <circle cx="13" cy="11" r="0.8" fill="#6b5e51"/>
+            <circle cx="10.5" cy="13.5" r="0.8" fill="#6b5e51"/>
+            <circle cx="8" cy="16" r="0.8" fill="#6b5e51"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">우리 반 리코더 급수제 인증표</h1>
+            <span class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs">
+              7급 ~ 마스터급
+            </span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-600 font-medium">학생별 시험곡 통과 여부를 클릭하여 기록하고 급수 띠를 부여하세요.</p>
+        </div>
+      </div>
+
+      <!-- 우측 유틸리티 버튼 모음 -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="toggleGuidePanel()" id="guideToggleBtn" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold text-xs sm:text-sm shadow-xs transition cursor-pointer">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
+          <span>급수별 시험곡·기술 안내</span>
+        </button>
+
+        <button onclick="openStudentModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          <span>학생 추가 / 일괄등록</span>
+        </button>
+
+        <div class="relative group">
+          <button class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold text-xs sm:text-sm shadow-xs transition cursor-pointer">
+            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <span class="hidden md:inline">데이터 관리</span>
+          </button>
+          <!-- 드롭다운 메뉴 -->
+          <div class="hidden group-hover:block absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 z-40">
+            <button onclick="exportCSV()" class="w-full text-left px-4 py-2 text-xs sm:text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2">
+              <span>📊 엑셀(CSV) 내보내기</span>
+            </button>
+            <button onclick="exportJSON()" class="w-full text-left px-4 py-2 text-xs sm:text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2">
+              <span>💾 백업 파일(JSON) 저장</span>
+            </button>
+            <label class="w-full text-left px-4 py-2 text-xs sm:text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2 cursor-pointer">
+              <span>📂 백업 파일 불러오기</span>
+              <input type="file" accept=".json" onchange="importJSON(event)" class="hidden" />
+            </label>
+            <hr class="my-1 border-slate-100">
+            <button onclick="window.print()" class="w-full text-left px-4 py-2 text-xs sm:text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2">
+              <span>🖨️ 교실 게시용 인쇄하기</span>
+            </button>
+            <button onclick="confirmResetData()" class="w-full text-left px-4 py-2 text-xs sm:text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-2">
+              <span>🔄 전체 데이터 초기화 (15명)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 인쇄 전용 제목 헤더 -->
+  <div class="hidden print-only text-center mb-4">
+    <h1 class="text-2xl font-bold">우리 반 리코더 급수제 인증 현황표</h1>
+    <p class="text-xs text-gray-600 mt-1" id="printDateText"></p>
+  </div>
+
+  <!-- 메인 컨테이너 -->
+  <main class="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+    <!-- 1. 접이식 급수제 기준 안내 패널 (기본 열림 또는 토글 가능) -->
+    <section id="curriculumGuidePanel" class="bg-white rounded-3xl border border-[#d4e5cb] shadow-sm overflow-hidden transition-all no-print">
+      <div class="bg-[#e8f3e2] px-5 py-3.5 border-b border-[#d4e5cb] flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">♣</span>
+          <h2 class="font-bold text-slate-800 text-base sm:text-lg">리코더 급수별 시험곡 및 필수 습득 기술 안내</h2>
+          <span class="hidden md:inline-block text-xs text-slate-600 bg-white/80 px-2.5 py-0.5 rounded-full">7급(가장 쉬운) → 마스터급(가장 어려운)</span>
+        </div>
+        <button onclick="toggleGuidePanel()" class="text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white/80 hover:bg-white px-3 py-1.5 rounded-xl border border-slate-200 transition cursor-pointer">
+          접기 ▲
+        </button>
+      </div>
+
+      <div class="p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-gradient-to-br from-white via-[#fafdf8] to-[#eef6e9]">
+        <!-- 좌측: 리코더 띠 일러스트 다이어그램 (이미지 재현) -->
+        <div class="lg:col-span-4 flex flex-col items-center justify-center bg-white rounded-2xl p-4 border border-[#e0ecd9] shadow-2xs">
+          <p class="text-xs font-bold text-slate-500 mb-2">🎵 리코더 급수 띠 위치 안내</p>
+          <svg viewBox="0 0 320 380" class="w-full max-w-[270px] h-auto select-none">
+            <!-- 배경 연두 반원 -->
+            <path d="M 180 0 Q 250 190 180 380 L 320 380 L 320 0 Z" fill="#e2efd9" opacity="0.65"/>
+            
+            <!-- 기울어진 리코더 그룹 -->
+            <g transform="translate(88, 22) rotate(14)">
+              <!-- 취구 (헤드 조인트 상단) -->
+              <path d="M 14 0 L 46 0 Q 52 0 52 8 L 52 38 L 56 46 L 56 56 L 4 56 L 4 46 L 8 38 L 8 8 Q 8 0 14 0 Z" fill="#fdf0d5" stroke="#6b5e51" stroke-width="2.2"/>
+              <!-- 취구 창(라비움) -->
+              <rect x="22" y="56" width="16" height="24" rx="2" fill="#e5e7eb" stroke="#6b5e51" stroke-width="1.8"/>
+              <line x1="22" y1="65" x2="38" y2="65" stroke="#6b5e51" stroke-width="1.8"/>
+              <!-- 헤드 하단 -->
+              <rect x="10" y="56" width="40" height="44" fill="#fdf0d5" stroke="#6b5e51" stroke-width="2.2"/>
+              <rect x="22" y="56" width="16" height="24" rx="2" fill="#d1d5db" stroke="#6b5e51" stroke-width="1.8"/>
+              <rect x="22" y="67" width="16" height="13" fill="#9ca3af" stroke="#6b5e51" stroke-width="1.5"/>
+
+              <!-- 마스터급: 검은띠 -->
+              <rect x="10" y="83" width="40" height="7" fill="#1f2937"/>
+              <!-- 1급: 보라띠 -->
+              <rect x="10" y="92" width="40" height="7" fill="#a855f7"/>
+
+              <!-- 가운데 연결 마디 -->
+              <rect x="6" y="100" width="48" height="12" rx="4" fill="#fdf0d5" stroke="#6b5e51" stroke-width="2.2"/>
+
+              <!-- 바디 관 -->
+              <rect x="12" y="112" width="36" height="175" fill="#fdf0d5" stroke="#6b5e51" stroke-width="2.2"/>
+
+              <!-- 2급: 남색띠 -->
+              <rect x="12" y="118" width="36" height="7" fill="#2563eb"/>
+              <!-- 구멍 1 -->
+              <circle cx="30" cy="138" r="6" fill="#ffffff" stroke="#6b5e51" stroke-width="1.8"/>
+              <!-- 3급: 파랑띠 -->
+              <rect x="12" y="150" width="36" height="7" fill="#60a5fa"/>
+              <!-- 구멍 2 -->
+              <circle cx="30" cy="168" r="6" fill="#ffffff" stroke="#6b5e51" stroke-width="1.8"/>
+              <!-- 4급: 초록띠 -->
+              <rect x="12" y="180" width="36" height="7" fill="#22c55e"/>
+              <!-- 구멍 3 -->
+              <circle cx="30" cy="198" r="6" fill="#ffffff" stroke="#6b5e51" stroke-width="1.8"/>
+              <!-- 5급: 노랑띠 -->
+              <rect x="12" y="210" width="36" height="7" fill="#eab308"/>
+              <!-- 구멍 4 -->
+              <circle cx="30" cy="228" r="6" fill="#ffffff" stroke="#6b5e51" stroke-width="1.8"/>
+              <!-- 6급: 주황띠 -->
+              <rect x="12" y="240" width="36" height="7" fill="#f97316"/>
+              <!-- 구멍 5 -->
+              <circle cx="30" cy="258" r="6" fill="#ffffff" stroke="#6b5e51" stroke-width="1.8"/>
+              <!-- 7급: 빨강띠 -->
+              <rect x="12" y="270" width="36" height="7" fill="#ef4444"/>
+
+              <!-- 하단 풋 조인트 -->
+              <rect x="8" y="287" width="44" height="24" rx="5" fill="#fdf0d5" stroke="#6b5e51" stroke-width="2.2"/>
+              <circle cx="30" cy="299" r="5.5" fill="#ffffff" stroke="#6b5e51" stroke-width="1.6"/>
+              <circle cx="28" cy="299" r="1.5" fill="#6b5e51"/>
+              <circle cx="32" cy="299" r="1.5" fill="#6b5e51"/>
+
+              <!-- 나팔 끝부분 -->
+              <path d="M 10 311 L 50 311 L 54 328 Q 54 333 48 333 L 12 333 Q 6 333 6 328 Z" fill="#fdf0d5" stroke="#6b5e51" stroke-width="2.2"/>
+            </g>
+
+            <!-- 우측 라벨 범례 -->
+            <g font-size="11" font-weight="700" fill="#334155">
+              <text x="195" y="45" fill="#1f2937">● 마스터급 (검은띠)</text>
+              <text x="195" y="85" fill="#7e22ce">● 1급 (보라띠)</text>
+              <text x="195" y="125" fill="#1d4ed8">● 2급 (남색띠)</text>
+              <text x="195" y="165" fill="#2563eb">● 3급 (파랑띠)</text>
+              <text x="195" y="205" fill="#15803d">● 4급 (초록띠)</text>
+              <text x="195" y="245" fill="#a16207">● 5급 (노랑띠)</text>
+              <text x="195" y="285" fill="#c2410c">● 6급 (주황띠)</text>
+              <text x="195" y="325" fill="#b91c1c">● 7급 (빨강띠)</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- 우측: 8단계 급수 상세 카드 리스트 -->
+        <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="guideCardsContainer">
+          <!-- JS로 렌더링 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 학급 요약 대시보드 카드 -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 no-print">
+      <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-lg shrink-0">
+          👥
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-slate-500">전체 학생 수</p>
+          <p class="text-xl sm:text-2xl font-extrabold text-slate-800"><span id="statTotalStudents">0</span><span class="text-sm font-semibold text-slate-500 ml-0.5">명</span></p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-lg shrink-0">
+          📈
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-slate-500">학급 전체 달성률</p>
+          <p class="text-xl sm:text-2xl font-extrabold text-emerald-600"><span id="statOverallRate">0</span><span class="text-sm font-semibold ml-0.5">%</span></p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-black text-lg shrink-0">
+          🎀
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs font-semibold text-slate-500">가장 많은 최고 띠</p>
+          <p class="text-base sm:text-lg font-extrabold text-slate-800 truncate" id="statMostCommonBelt">-</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-xl bg-slate-800 text-amber-300 flex items-center justify-center font-black text-lg shrink-0">
+          👑
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-slate-500">마스터급(검은띠) 달성</p>
+          <p class="text-xl sm:text-2xl font-extrabold text-slate-800"><span id="statMasterCount">0</span><span class="text-sm font-semibold text-slate-500 ml-0.5">명</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 검색 / 필터 / 일괄 체크 툴바 -->
+    <section class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 no-print">
+      <div class="flex flex-wrap items-center gap-2.5 flex-1">
+        <!-- 이름 검색 -->
+        <div class="relative flex-1 min-w-[180px] max-w-xs">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <input type="text" id="searchInput" oninput="renderTable()" placeholder="학생 이름 또는 번호 검색..." class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition" />
+        </div>
+
+        <!-- 현재 최고 급수 필터 -->
+        <select id="beltFilter" onchange="renderTable()" class="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-700 cursor-pointer">
+          <option value="all">전체 급수 보기</option>
+          <option value="none">미획득 (도전 중)</option>
+          <option value="7">최고 7급 (빨강띠)</option>
+          <option value="6">최고 6급 (주황띠)</option>
+          <option value="5">최고 5급 (노랑띠)</option>
+          <option value="4">최고 4급 (초록띠)</option>
+          <option value="3">최고 3급 (파랑띠)</option>
+          <option value="2">최고 2급 (남색띠)</option>
+          <option value="1">최고 1급 (보라띠)</option>
+          <option value="0">마스터급 (검은띠)</option>
+        </select>
+
+        <!-- 정렬 기준 -->
+        <select id="sortOrder" onchange="renderTable()" class="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-700 cursor-pointer">
+          <option value="number">번호순 정렬</option>
+          <option value="name">이름순 정렬</option>
+          <option value="progressDesc">달성 높은순</option>
+          <option value="progressAsc">달성 낮은순</option>
+        </select>
+      </div>
+
+      <div class="flex items-center justify-between md:justify-end gap-2 text-xs text-slate-500">
+        <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2.5 py-1.5 rounded-lg font-medium">
+          💡 칸을 클릭하면 <strong>성공(띠 획득)</strong> / <strong>미통과</strong>가 전환됩니다
+        </span>
+      </div>
+    </section>
+
+    <!-- 4. 메인 리코더 급수 체크 매트릭스 표 -->
+    <section class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[1080px]">
+          <thead>
+            <tr class="bg-[#eef6e9] border-b-2 border-[#cde0c3] text-slate-700">
+              <th class="py-3.5 px-3 text-center text-xs font-bold w-14 sticky-col left-0 bg-[#eef6e9] z-20">번호</th>
+              <th class="py-3.5 px-3 text-left text-xs font-bold w-28 sticky-col left-14 bg-[#eef6e9] z-20 border-r border-[#d7e7ce]">이름</th>
+              <th class="py-3.5 px-3 text-center text-xs font-bold w-32">현재 최고 띠</th>
+              <th class="py-3.5 px-3 text-center text-xs font-bold w-28 border-r border-[#d7e7ce]">달성률</th>
+              <!-- 8개 급수 헤더 (JS로 동적 생성) -->
+              <th id="levelHeadersPlaceholder" colspan="8"></th>
+              <th class="py-3.5 px-2 text-center text-xs font-bold w-16 no-print">관리</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody" class="divide-y divide-slate-100 text-sm">
+            <!-- JS로 학생 행 렌더링 -->
+          </tbody>
+          <tfoot id="studentTableFoot" class="bg-slate-50/90 border-t-2 border-slate-200 text-xs font-bold text-slate-600">
+            <!-- JS로 급수별 통과 인원 통계 렌더링 -->
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- 검색 결과 없음 안내 -->
+      <div id="emptyState" class="hidden py-14 text-center">
+        <p class="text-4xl mb-2">🪈</p>
+        <p class="text-slate-600 font-bold text-base">표시할 학생 데이터가 없습니다.</p>
+        <p class="text-slate-400 text-xs mt-1">검색어를 지우거나 상단의 [학생 추가 / 일괄등록] 버튼을 눌러 학생을 등록해 주세요.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-4 text-center text-xs text-slate-400 no-print">
+    모든 체크 기록은 현재 브라우저에 자동 저장됩니다. 다른 컴퓨터로 옮기실 때는 상단 [데이터 관리 → 백업 파일(JSON) 저장]을 이용해 주세요.
+  </footer>
+
+  <!-- 급수 상세 기술 툴팁/팝오버 (헤더 클릭 시 표시) -->
+  <div id="skillModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4" onclick="closeSkillModal(event)">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-slate-100 animate-[fadeIn_0.15s_ease-out]" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2.5">
+          <span id="skillModalBadge" class="px-3 py-1 rounded-full text-xs font-extrabold text-white shadow-xs"></span>
+          <h3 id="skillModalTitle" class="text-lg font-extrabold text-slate-800"></h3>
+        </div>
+        <button onclick="document.getElementById('skillModal').classList.add('hidden')" class="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 cursor-pointer">✕</button>
+      </div>
+      
+      <div class="space-y-4">
+        <div class="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-3.5">
+          <p class="text-xs font-bold text-amber-800 mb-1">♣ 시험곡</p>
+          <p id="skillModalSong" class="text-sm font-bold text-slate-800"></p>
+        </div>
+        <div class="bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-3.5">
+          <p class="text-xs font-bold text-emerald-800 mb-1.5">♣ 필수 습득 기술</p>
+          <ul id="skillModalSkills" class="text-sm text-slate-700 space-y-1 list-disc list-inside font-medium"></ul>
+        </div>
+        <div class="pt-2 flex items-center justify-between border-t border-slate-100">
+          <span class="text-xs text-slate-500">현재 반 전체 학생 일괄 처리:</span>
+          <div class="flex gap-2">
+            <button id="bulkPassLevelBtn" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer">전체 성공 처리</button>
+            <button id="bulkClearLevelBtn" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold cursor-pointer">전체 해제</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 학생 추가 / 일괄등록 모달 -->
+  <div id="studentModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4" onclick="closeStudentModal(event)">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-xl border border-slate-100" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-extrabold text-slate-800">학생 추가 및 명단 일괄 등록</h3>
+        <button onclick="document.getElementById('studentModal').classList.add('hidden')" class="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 cursor-pointer">✕</button>
+      </div>
+
+      <!-- 탭 전환 -->
+      <div class="flex gap-2 p-1 bg-slate-100 rounded-xl mb-4">
+        <button id="tabSingleBtn" onclick="switchModalTab('single')" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-emerald-700 shadow-2xs cursor-pointer">1명씩 개별 추가</button>
+        <button id="tabBulkBtn" onclick="switchModalTab('bulk')" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-800 cursor-pointer">엑셀/명단 붙여넣기 (일괄)</button>
+      </div>
+
+      <!-- 개별 추가 폼 -->
+      <form id="singleStudentForm" onsubmit="handleAddSingleStudent(event)" class="space-y-4">
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">출석 번호</label>
+            <input type="number" id="newStudentNumber" min="1" max="99" required class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+          <div class="col-span-2">
+            <label class="block text-xs font-bold text-slate-600 mb-1">학생 이름</label>
+            <input type="text" id="newStudentName" placeholder="예: 김하늘" required class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="document.getElementById('studentModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold hover:bg-slate-200 cursor-pointer">취소</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 cursor-pointer">추가하기</button>
+        </div>
+      </form>
+
+      <!-- 일괄 등록 폼 -->
+      <form id="bulkStudentForm" onsubmit="handleAddBulkStudents(event)" class="hidden space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">학생 이름 목록 (줄바꿈 또는 쉼표로 구분)</label>
+          <textarea id="bulkNamesInput" rows="5" placeholder="김민준&#10;이서윤&#10;박도윤&#10;최지우" required class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+          <p class="text-[11px] text-slate-500 mt-1">* 현재 마지막 번호 다음 번호부터 자동으로 순차 부여됩니다. ("1 김민준" 형태도 자동 인식)</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="replaceExistingCheck" class="rounded text-emerald-600 focus:ring-emerald-500" />
+          <label for="replaceExistingCheck" class="text-xs text-rose-600 font-semibold">기존 명단을 모두 지우고 새로 덮어쓰기</label>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="document.getElementById('studentModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold hover:bg-slate-200 cursor-pointer">취소</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 cursor-pointer">일괄 등록하기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 커스텀 확인/알림 토스트 및 모달 -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 bg-slate-800 text-white px-4 py-2.5 rounded-2xl shadow-lg text-xs sm:text-sm font-semibold flex items-center gap-2 translate-y-20 opacity-0 transition-all duration-300 z-50 no-print">
+    <span id="toastIcon">✅</span>
+    <span id="toastMessage">저장되었습니다.</span>
+  </div>
+
+  <!-- 커스텀 Confirm 대체 모달 -->
+  <div id="confirmModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl border border-slate-100 text-center">
+      <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3 text-xl">⚠️</div>
+      <h4 id="confirmTitle" class="text-base font-extrabold text-slate-800 mb-1">확인해 주세요</h4>
+      <p id="confirmDesc" class="text-xs text-slate-500 mb-5 leading-relaxed"></p>
+      <div class="flex gap-2 justify-center">
+        <button id="confirmCancelBtn" class="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer">취소</button>
+        <button id="confirmOkBtn" class="flex-1 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * 1. 리코더 급수제 기준 데이터 (1급, 마스터급 세부 항목 추가)
+     */
+    const RECORDER_LEVELS = [
+      {
+        id: '7',
+        order: 1,
+        levelName: '7급',
+        beltName: '빨강띠',
+        colorHex: '#ef4444',
+        bgSoft: '#fef2f2',
+        borderSoft: '#fecaca',
+        textDark: '#b91c1c',
+        song: '없음. "솔" 소리 예쁘게 내기',
+        shortSong: '"솔" 소리 예쁘게 내기',
+        skills: ['리코더 연주 기본 자세, 호흡', '"솔" 운지법'],
+        difficultyTag: '가장 쉬운'
+      },
+      {
+        id: '6',
+        order: 2,
+        levelName: '6급',
+        beltName: '주황띠',
+        colorHex: '#f97316',
+        bgSoft: '#fff7ed',
+        borderSoft: '#fed7aa',
+        textDark: '#c2410c',
+        song: '그네 (4번 곡)',
+        shortSong: '그네 (4번 곡)',
+        skills: ['솔, 라, 시 운지법']
+      },
+      {
+        id: '5',
+        order: 3,
+        levelName: '5급',
+        beltName: '노랑띠',
+        colorHex: '#eab308',
+        bgSoft: '#fefce8',
+        borderSoft: '#fef08a',
+        textDark: '#a16207',
+        song: '나비야 (8번 곡)',
+        shortSong: '나비야 (8번 곡)',
+        skills: ['높은 도, 레 운지법', '한 손 연주 매끄럽게 하기']
+      },
+      {
+        id: '4',
+        order: 4,
+        levelName: '4급',
+        beltName: '초록띠',
+        colorHex: '#22c55e',
+        bgSoft: '#f0fdf4',
+        borderSoft: '#bbf7d0',
+        textDark: '#15803d',
+        song: '우리 집은 웃음 바다 (13번 곡)',
+        shortSong: '우리 집은 웃음 바다',
+        skills: ['도, 레, 미, 파 운지법']
+      },
+      {
+        id: '3',
+        order: 5,
+        levelName: '3급',
+        beltName: '파랑띠',
+        colorHex: '#60a5fa',
+        bgSoft: '#eff6ff',
+        borderSoft: '#bfdbfe',
+        textDark: '#1d4ed8',
+        song: '에델바이스 (21번 곡)',
+        shortSong: '에델바이스 (21번 곡)',
+        skills: ['친구와 2중주', '소리의 어울림을 느끼며 연주하기']
+      },
+      {
+        id: '2',
+        order: 6,
+        levelName: '2급',
+        beltName: '남색띠',
+        colorHex: '#2563eb',
+        bgSoft: '#eef2ff',
+        borderSoft: '#c7d2fe',
+        textDark: '#1e3a8a',
+        song: '유모레스크 (27번 곡)',
+        shortSong: '유모레스크 (27번 곡)',
+        skills: ['높은 미, 파, 솔 운지법', '양손 연주 박자 맞춰 매끄럽게 하기']
+      },
+      {
+        id: '1',
+        order: 7,
+        levelName: '1급',
+        beltName: '보라띠',
+        colorHex: '#a855f7',
+        bgSoft: '#faf5ff',
+        borderSoft: '#e9d5ff',
+        textDark: '#7e22ce',
+        song: '비비디 바비디 부, 연가 (34, 40번 곡)',
+        shortSong: '비비디 바비디 부, 연가',
+        skills: ['시b, 파# 운지법', '능숙한 리코더 연주실력'],
+        subTasks: [
+          { id: '1_1', name: '비비디 바비디 부' },
+          { id: '1_2', name: '연가' }
+        ]
+      },
+      {
+        id: '0',
+        order: 8,
+        levelName: '마스터급',
+        beltName: '검은띠',
+        colorHex: '#1f2937',
+        bgSoft: '#f3f4f6',
+        borderSoft: '#d1d5db',
+        textDark: '#111827',
+        song: '가요 3곡 (2곡 본인 선택, 1곡 선생님 지정)',
+        shortSong: '가요 3곡 (선택2·지정1)',
+        skills: ['리코더를 스스로 연습하고', '자유자재로 연주하며 즐기는 자세'],
+        difficultyTag: '가장 어려운',
+        subTasks: [
+          { id: '0_1', placeholder: '본인 선택곡 1', isCustom: true },
+          { id: '0_2', placeholder: '본인 선택곡 2', isCustom: true },
+          { id: '0_3', placeholder: '선생님 지정곡', isCustom: true }
+        ]
+      }
+    ];
+
+    // 기존 버전과 데이터 구조가 달라 충돌을 방지하기 위해 v2로 변경합니다.
+    const STORAGE_KEY = 'recorder_belt_students_v2';
+    // 총 체크해야 하는 횟수 (기본 6개 + 1급 2개 + 마스터 3개 = 11개)
+    const TOTAL_CHECKS = 11;
+
+    // 초기 15명 학생 리스트
+    const SAMPLE_STUDENTS = Array.from({ length: 15 }, (_, i) => ({
+      id: 's' + (i + 1),
+      number: i + 1,
+      name: '학생 ' + (i + 1),
+      passed: [],
+      customSongs: {}
+    }));
+
+    let students = [];
+    let isGuideOpen = true;
+
+    /**
+     * 2. 초기화 및 로컬스토리지 연동
+     */
+    function initApp() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          students = JSON.parse(saved);
+        } catch (e) {
+          students = JSON.parse(JSON.stringify(SAMPLE_STUDENTS));
+        }
+      } else {
+        students = JSON.parse(JSON.stringify(SAMPLE_STUDENTS));
+        saveStudents();
+      }
+
+      const today = new Date();
+      document.getElementById('printDateText').textContent = `출력일: ${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+
+      renderGuideCards();
+      renderTableHeaders();
+      renderTable();
+    }
+
+    function saveStudents() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+    }
+
+    /**
+     * 3. 급수별 안내 카드 및 테이블 헤더 생성
+     */
+    function renderGuideCards() {
+      const container = document.getElementById('guideCardsContainer');
+      const reversedLevels = [...RECORDER_LEVELS].reverse();
+
+      container.innerHTML = reversedLevels.map(lvl => `
+        <div class="flex items-start gap-3 p-3 rounded-2xl border bg-white hover:shadow-xs transition" style="border-color: ${lvl.borderSoft}">
+          <div class="shrink-0 flex flex-col items-center justify-center w-16 py-1.5 rounded-xl text-white font-extrabold shadow-2xs" style="background-color: ${lvl.colorHex}">
+            <span class="text-xs leading-tight">${lvl.levelName}</span>
+            <span class="text-[10px] opacity-90 font-semibold">(${lvl.beltName})</span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-xs font-extrabold text-slate-800">🎵 ${lvl.song}</span>
+              ${lvl.difficultyTag ? `<span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 font-bold">${lvl.difficultyTag}</span>` : ''}
+            </div>
+            <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+              ${lvl.skills.map(s => `• ${s}`).join('  ')}
+            </p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderTableHeaders() {
+      const placeholder = document.getElementById('levelHeadersPlaceholder');
+      const headerHtml = RECORDER_LEVELS.map(lvl => `
+        <th onclick="openSkillModal('${lvl.id}')" title="클릭하여 필수 습득 기술 보기" class="py-2.5 px-2 text-center border-r border-[#d7e7ce]/70 cursor-pointer hover:bg-[#e1efd9] transition group min-w-[100px]">
+          <div class="flex flex-col items-center gap-1">
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold text-white shadow-2xs group-hover:scale-105 transition" style="background-color: ${lvl.colorHex}">
+              ${lvl.levelName} · ${lvl.beltName}
+            </span>
+            <span class="text-[11px] font-bold text-slate-700 line-clamp-1 max-w-[110px]" title="${lvl.song}">
+              ${lvl.shortSong}
+            </span>
+            <span class="text-[10px] text-emerald-700/80 font-medium no-print group-hover:underline">기술보기 ⓘ</span>
+          </div>
+        </th>
+      `).join('');
+
+      placeholder.outerHTML = headerHtml;
+    }
+
+    /**
+     * 4. 학생 통과 여부 및 최고 급수 계산
+     */
+    function isLevelPassed(student, level) {
+      if (level.subTasks) {
+        return level.subTasks.every(sub => student.passed.includes(sub.id));
+      }
+      return student.passed.includes(level.id);
+    }
+
+    function getHighestBelt(student) {
+      let highest = null;
+      // 7급(index 0)부터 순차적으로 체크
+      for (const lvl of RECORDER_LEVELS) {
+        if (isLevelPassed(student, lvl)) {
+          highest = lvl;
+        }
+      }
+      return highest;
+    }
+
+    /**
+     * 5. 메인 테이블 렌더링 & 통계 업데이트
+     */
+    function renderTable() {
+      const searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+      const beltFilter = document.getElementById('beltFilter').value;
+      const sortOrder = document.getElementById('sortOrder').value;
+
+      let filtered = students.filter(st => {
+        const matchSearch = st.name.toLowerCase().includes(searchQuery) || String(st.number).includes(searchQuery);
+        if (!matchSearch) return false;
+
+        const highest = getHighestBelt(st);
+        if (beltFilter === 'all') return true;
+        if (beltFilter === 'none') return highest === null;
+        return highest && highest.id === beltFilter;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortOrder === 'number') return a.number - b.number;
+        if (sortOrder === 'name') return a.name.localeCompare(b.name, 'ko');
+        if (sortOrder === 'progressDesc') return b.passed.length - a.passed.length || a.number - b.number;
+        if (sortOrder === 'progressAsc') return a.passed.length - b.passed.length || a.number - b.number;
+        return 0;
+      });
+
+      const tbody = document.getElementById('studentTableBody');
+      const emptyState = document.getElementById('emptyState');
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+        tbody.innerHTML = filtered.map(st => {
+          const highest = getHighestBelt(st);
+          const rate = Math.round((st.passed.length / TOTAL_CHECKS) * 100);
+
+          const highestBadge = highest
+            ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold text-white shadow-2xs" style="background-color: ${highest.colorHex}">
+                 🎀 ${highest.levelName} (${highest.beltName})
+               </span>`
+            : `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-400">
+                 도전 중
+               </span>`;
+
+          const levelCells = RECORDER_LEVELS.map(lvl => {
+            if (lvl.id === '1') {
+              // 1급 (보라띠) - 2곡 개별 체크
+              return `
+                <td class="p-2 border-r border-slate-100 align-middle min-w-[130px]">
+                  <div class="flex flex-col gap-1.5 h-full justify-center">
+                    ${lvl.subTasks.map(sub => {
+                       const isPassed = st.passed.includes(sub.id);
+                       return `
+                        <button onclick="toggleBelt('${st.id}', '${sub.id}')" class="flex items-center justify-between w-full px-2 py-1.5 rounded-lg border transition ${isPassed ? 'bg-[#faf5ff] border-[#a855f7] text-[#7e22ce] shadow-2xs' : 'bg-slate-50 border-slate-200 text-slate-400 hover:border-[#d8b4fe] hover:bg-white'}">
+                          <span class="text-[10.5px] font-bold whitespace-nowrap overflow-hidden text-ellipsis mr-1">${sub.name}</span>
+                          <span class="text-xs shrink-0">${isPassed ? '✓' : '○'}</span>
+                        </button>
+                       `;
+                    }).join('')}
+                  </div>
+                </td>
+              `;
+            } else if (lvl.id === '0') {
+              // 마스터급 (검은띠) - 3곡 입력 폼 및 개별 체크
+              return `
+                <td class="p-2 border-r border-slate-100 align-middle min-w-[200px]">
+                  <div class="flex flex-col gap-1 w-full">
+                    ${lvl.subTasks.map(sub => {
+                       const isPassed = st.passed.includes(sub.id);
+                       const songName = (st.customSongs && st.customSongs[sub.id]) || '';
+                       return `
+                        <div class="flex items-stretch gap-1 w-full">
+                          <input type="text" placeholder="${sub.placeholder}" value="${songName}" onchange="updateCustomSong('${st.id}', '${sub.id}', this.value)" class="flex-1 min-w-0 text-[11px] px-2 py-1 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:border-slate-800 focus:outline-none transition placeholder-slate-400 font-medium" />
+                          <button onclick="toggleBelt('${st.id}', '${sub.id}')" class="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg border transition ${isPassed ? 'bg-[#1f2937] border-[#1f2937] text-white shadow-2xs' : 'bg-slate-50 border-slate-200 text-slate-300 hover:border-slate-400 hover:bg-white'}">
+                            <span class="text-sm font-bold leading-none">${isPassed ? '✓' : '○'}</span>
+                          </button>
+                        </div>
+                       `;
+                    }).join('')}
+                  </div>
+                </td>
+              `;
+            } else {
+              // 그 외 기본 단계들
+              const isPassed = isLevelPassed(st, lvl);
+              return `
+                <td class="p-2 text-center border-r border-slate-100">
+                  <button
+                    onclick="toggleBelt('${st.id}', '${lvl.id}')"
+                    class="belt-btn w-full h-[68px] rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer border transition ${
+                      isPassed
+                        ? 'shadow-xs font-extrabold'
+                        : 'bg-slate-50/70 hover:bg-slate-100 border-dashed border-slate-200 text-slate-300 hover:text-slate-500'
+                    }"
+                    style="${isPassed ? `background-color: ${lvl.bgSoft}; border-color: ${lvl.colorHex}; color: ${lvl.textDark};` : ''}"
+                  >
+                    ${
+                      isPassed
+                        ? `<span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs shadow-2xs" style="background-color: ${lvl.colorHex}">✓</span>
+                           <span class="text-[10px] leading-none mt-0.5">성공</span>`
+                        : `<span class="text-sm leading-none">○</span>
+                           <span class="text-[10px] leading-none mt-0.5">미통과</span>`
+                    }
+                  </button>
+                </td>
+              `;
+            }
+          }).join('');
+
+          return `
+            <tr class="hover:bg-emerald-50/30 transition group">
+              <td class="py-2.5 px-3 text-center font-bold text-slate-500 sticky-col left-0 bg-white group-hover:bg-[#f7fbf5] z-10">${st.number}</td>
+              <td class="py-1 px-2 font-extrabold text-slate-800 sticky-col left-14 bg-white group-hover:bg-[#f7fbf5] z-10 border-r border-slate-100">
+                <input type="text" value="${st.name}" onchange="updateStudentName('${st.id}', this.value)" placeholder="이름" class="w-[84px] px-1.5 py-1 text-sm font-extrabold text-slate-800 bg-transparent border border-transparent hover:border-slate-200 focus:bg-white focus:border-emerald-500 rounded focus:outline-none transition" />
+              </td>
+              <td class="py-2.5 px-3 text-center">${highestBadge}</td>
+              <td class="py-2.5 px-3 border-r border-slate-100">
+                <div class="flex flex-col items-center gap-1">
+                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-300 ${rate === 100 ? 'bg-amber-500' : 'bg-emerald-500'}" style="width: ${rate}%"></div>
+                  </div>
+                  <span class="text-[11px] font-bold text-slate-600">${st.passed.length}/${TOTAL_CHECKS} (${rate}%)</span>
+                </div>
+              </td>
+              ${levelCells}
+              <td class="py-2.5 px-2 text-center no-print">
+                <button onclick="deleteStudent('${st.id}')" title="학생 삭제" class="p-1.5 rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      renderFooterStats();
+      updateDashboardStats();
+    }
+
+    function renderFooterStats() {
+      const tfoot = document.getElementById('studentTableFoot');
+      const total = students.length;
+      if (total === 0) {
+        tfoot.innerHTML = '';
+        return;
+      }
+
+      const levelCountsHtml = RECORDER_LEVELS.map(lvl => {
+        const count = students.filter(s => isLevelPassed(s, lvl)).length;
+        const pct = Math.round((count / total) * 100);
+        return `
+          <td class="py-2.5 px-2 text-center border-r border-slate-200/70">
+            <span class="text-slate-800 font-extrabold">${count}명</span>
+            <span class="block text-[10px] text-slate-400">(${pct}%)</span>
+          </td>
+        `;
+      }).join('');
+
+      tfoot.innerHTML = `
+        <tr>
+          <td colspan="4" class="py-2.5 px-4 text-right border-r border-slate-200">급수 전체 통과 인원 (총 ${total}명 기준)</td>
+          ${levelCountsHtml}
+          <td class="no-print"></td>
+        </tr>
+      `;
+    }
+
+    function updateDashboardStats() {
+      const total = students.length;
+      document.getElementById('statTotalStudents').textContent = total;
+
+      if (total === 0) {
+        document.getElementById('statOverallRate').textContent = '0';
+        document.getElementById('statMostCommonBelt').textContent = '-';
+        document.getElementById('statMasterCount').textContent = '0';
+        return;
+      }
+
+      const totalPossible = total * TOTAL_CHECKS;
+      const totalPassed = students.reduce((acc, s) => acc + s.passed.length, 0);
+      const overallRate = Math.round((totalPassed / totalPossible) * 100);
+      document.getElementById('statOverallRate').textContent = overallRate;
+
+      const masterLvl = RECORDER_LEVELS.find(l => l.id === '0');
+      const masterCount = students.filter(s => isLevelPassed(s, masterLvl)).length;
+      document.getElementById('statMasterCount').textContent = masterCount;
+
+      const beltFreq = {};
+      students.forEach(s => {
+        const h = getHighestBelt(s);
+        const key = h ? `${h.levelName} (${h.beltName})` : '도전 중 (미획득)';
+        beltFreq[key] = (beltFreq[key] || 0) + 1;
+      });
+
+      let maxKey = '-';
+      let maxVal = 0;
+      for (const [k, v] of Object.entries(beltFreq)) {
+        if (v > maxVal) {
+          maxVal = v;
+          maxKey = `${k} · ${v}명`;
+        }
+      }
+      document.getElementById('statMostCommonBelt').textContent = maxKey;
+    }
+
+    /**
+     * 6. 인터랙션 및 입력 핸들러
+     */
+    function toggleBelt(studentId, levelOrSubId) {
+      const student = students.find(s => s.id === studentId);
+      if (!student) return;
+
+      const idx = student.passed.indexOf(levelOrSubId);
+      if (idx > -1) {
+        student.passed.splice(idx, 1);
+      } else {
+        student.passed.push(levelOrSubId);
+      }
+      saveStudents();
+      renderTable();
+    }
+
+    function updateStudentName(studentId, newName) {
+      const student = students.find(s => s.id === studentId);
+      if (student) {
+        student.name = newName.trim();
+        saveStudents();
+      }
+    }
+
+    function updateCustomSong(studentId, subTaskId, value) {
+      const student = students.find(s => s.id === studentId);
+      if (student) {
+        if (!student.customSongs) student.customSongs = {};
+        student.customSongs[subTaskId] = value.trim();
+        saveStudents();
+      }
+    }
+
+    function toggleGuidePanel() {
+      const panel = document.getElementById('curriculumGuidePanel');
+      const btn = document.getElementById('guideToggleBtn');
+      isGuideOpen = !isGuideOpen;
+
+      if (isGuideOpen) {
+        panel.classList.remove('hidden');
+        btn.classList.add('bg-emerald-50', 'border-emerald-300');
+      } else {
+        panel.classList.add('hidden');
+        btn.classList.remove('bg-emerald-50', 'border-emerald-300');
+      }
+    }
+
+    function openSkillModal(levelId) {
+      const lvl = RECORDER_LEVELS.find(l => l.id === levelId);
+      if (!lvl) return;
+
+      const badge = document.getElementById('skillModalBadge');
+      badge.textContent = lvl.beltName;
+      badge.style.backgroundColor = lvl.colorHex;
+
+      document.getElementById('skillModalTitle').textContent = `${lvl.levelName} 인증 기준 안내`;
+      document.getElementById('skillModalSong').textContent = lvl.song;
+
+      const skillsList = document.getElementById('skillModalSkills');
+      skillsList.innerHTML = lvl.skills.map(sk => `<li>${sk}</li>`).join('');
+
+      document.getElementById('bulkPassLevelBtn').onclick = () => {
+        students.forEach(s => {
+          if (lvl.subTasks) {
+            lvl.subTasks.forEach(sub => {
+              if (!s.passed.includes(sub.id)) s.passed.push(sub.id);
+            });
+          } else {
+            if (!s.passed.includes(levelId)) s.passed.push(levelId);
+          }
+        });
+        saveStudents();
+        renderTable();
+        document.getElementById('skillModal').classList.add('hidden');
+        showToast(`전체 학생을 [${lvl.levelName}] 성공으로 일괄 체크했습니다.`, '✅');
+      };
+
+      document.getElementById('bulkClearLevelBtn').onclick = () => {
+        students.forEach(s => {
+          if (lvl.subTasks) {
+            const subIds = lvl.subTasks.map(sub => sub.id);
+            s.passed = s.passed.filter(id => !subIds.includes(id));
+          } else {
+            s.passed = s.passed.filter(id => id !== levelId);
+          }
+        });
+        saveStudents();
+        renderTable();
+        document.getElementById('skillModal').classList.add('hidden');
+        showToast(`전체 학생의 [${lvl.levelName}] 체크를 일괄 해제했습니다.`, '↩️');
+      };
+
+      document.getElementById('skillModal').classList.remove('hidden');
+    }
+
+    function closeSkillModal(e) {
+      if (e.target.id === 'skillModal') {
+        document.getElementById('skillModal').classList.add('hidden');
+      }
+    }
+
+    function openStudentModal() {
+      const maxNum = students.reduce((max, s) => Math.max(max, s.number), 0);
+      document.getElementById('newStudentNumber').value = maxNum + 1;
+      document.getElementById('newStudentName').value = '';
+      document.getElementById('bulkNamesInput').value = '';
+      document.getElementById('replaceExistingCheck').checked = false;
+      switchModalTab('single');
+      document.getElementById('studentModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('newStudentName').focus(), 50);
+    }
+
+    function closeStudentModal(e) {
+      if (e.target.id === 'studentModal') {
+        document.getElementById('studentModal').classList.add('hidden');
+      }
+    }
+
+    function switchModalTab(tab) {
+      const singleForm = document.getElementById('singleStudentForm');
+      const bulkForm = document.getElementById('bulkStudentForm');
+      const singleBtn = document.getElementById('tabSingleBtn');
+      const bulkBtn = document.getElementById('tabBulkBtn');
+
+      if (tab === 'single') {
+        singleForm.classList.remove('hidden');
+        bulkForm.classList.add('hidden');
+        singleBtn.className = 'flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-emerald-700 shadow-2xs cursor-pointer';
+        bulkBtn.className = 'flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-800 cursor-pointer';
+      } else {
+        singleForm.classList.add('hidden');
+        bulkForm.classList.remove('hidden');
+        bulkBtn.className = 'flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-emerald-700 shadow-2xs cursor-pointer';
+        singleBtn.className = 'flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-800 cursor-pointer';
+      }
+    }
+
+    function handleAddSingleStudent(e) {
+      e.preventDefault();
+      const num = parseInt(document.getElementById('newStudentNumber').value, 10);
+      const name = document.getElementById('newStudentName').value.trim();
+      if (!name) return;
+
+      students.push({
+        id: 'st_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        number: num,
+        name: name,
+        passed: [],
+        customSongs: {}
+      });
+
+      saveStudents();
+      renderTable();
+      document.getElementById('studentModal').classList.add('hidden');
+      showToast(`${num}번 ${name} 학생이 추가되었습니다.`, '👤');
+    }
+
+    function handleAddBulkStudents(e) {
+      e.preventDefault();
+      const raw = document.getElementById('bulkNamesInput').value;
+      const replace = document.getElementById('replaceExistingCheck').checked;
+
+      const lines = raw.split(/[\n,]+/).map(item => item.trim()).filter(Boolean);
+      if (lines.length === 0) return;
+
+      if (replace) students = [];
+
+      let nextNum = students.reduce((max, s) => Math.max(max, s.number), 0) + 1;
+
+      lines.forEach(line => {
+        const match = line.match(/^(\d+)[\s.)번-]+(.+)$/);
+        if (match) {
+          const parsedNum = parseInt(match[1], 10);
+          const parsedName = match[2].trim();
+          students.push({
+            id: 'st_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+            number: parsedNum,
+            name: parsedName,
+            passed: [],
+            customSongs: {}
+          });
+          nextNum = Math.max(nextNum, parsedNum + 1);
+        } else {
+          students.push({
+            id: 'st_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+            number: nextNum++,
+            name: line,
+            passed: [],
+            customSongs: {}
+          });
+        }
+      });
+
+      saveStudents();
+      renderTable();
+      document.getElementById('studentModal').classList.add('hidden');
+      showToast(`총 ${lines.length}명의 학생 명단이 등록되었습니다.`, '📋');
+    }
+
+    function deleteStudent(studentId) {
+      const target = students.find(s => s.id === studentId);
+      if (!target) return;
+
+      openCustomConfirm(
+        `${target.number}번 ${target.name} 학생 삭제`,
+        '이 학생의 리코더 급수 체크 기록이 모두 삭제됩니다. 계속하시겠습니까?',
+        () => {
+          students = students.filter(s => s.id !== studentId);
+          saveStudents();
+          renderTable();
+          showToast(`${target.name} 학생이 명단에서 삭제되었습니다.`, '🗑️');
+        }
+      );
+    }
+
+    /**
+     * 7. 내보내기 / 가져오기 / 초기화
+     */
+    function exportCSV() {
+      // 11개 세부 체크 항목까지 모두 출력할 수 있도록 헤더 생성
+      const headers = ['번호', '이름', '현재최고띠', '달성체크수'];
+      RECORDER_LEVELS.forEach(l => {
+        if (l.subTasks) {
+          l.subTasks.forEach(sub => {
+            if (sub.isCustom) {
+               headers.push(`${l.levelName}(${sub.placeholder} 곡명)`);
+               headers.push(`${l.levelName}(${sub.placeholder} 통과)`);
+            } else {
+               headers.push(`${l.levelName}(${sub.name} 통과)`);
+            }
+          });
+        } else {
+          headers.push(`${l.levelName}(${l.beltName})`);
+        }
+      });
+
+      const rows = [...students].sort((a, b) => a.number - b.number).map(st => {
+        const highest = getHighestBelt(st);
+        const highestStr = highest ? `${highest.levelName}(${highest.beltName})` : '미획득';
+        const row = [st.number, st.name, highestStr, `${st.passed.length}/${TOTAL_CHECKS}`];
+
+        RECORDER_LEVELS.forEach(l => {
+          if (l.subTasks) {
+             l.subTasks.forEach(sub => {
+               if (sub.isCustom) {
+                 const songName = st.customSongs?.[sub.id] || '';
+                 const passed = st.passed.includes(sub.id) ? 'O' : 'X';
+                 row.push(songName);
+                 row.push(passed);
+               } else {
+                 row.push(st.passed.includes(sub.id) ? 'O' : 'X');
+               }
+             });
+          } else {
+             row.push(st.passed.includes(l.id) ? 'O' : 'X');
+          }
+        });
+        return row;
+      });
+
+      const csvContent = '\uFEFF' + [headers, ...rows].map(r => r.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `리코더_급수제_인증현황_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('엑셀(CSV) 파일이 다운로드되었습니다.', '📊');
+    }
+
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(students, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `리코더_급수제_백업_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('백업 파일(JSON)이 저장되었습니다.', '💾');
+    }
+
+    function importJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            students = imported;
+            saveStudents();
+            renderTable();
+            showToast('백업 데이터를 성공적으로 불러왔습니다.', '📂');
+          } else {
+            showToast('올바른 백업 파일 형식이 아닙니다.', '⚠️');
+          }
+        } catch (err) {
+          showToast('파일을 읽는 중 오류가 발생했습니다.', '⚠️');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    function confirmResetData() {
+      openCustomConfirm(
+        '데이터 초기화 (15명)',
+        '현재 저장된 학생 명단과 체크, 곡명 기록이 모두 지워지고 기본 15명의 학생으로 초기화됩니다.',
+        () => {
+          students = JSON.parse(JSON.stringify(SAMPLE_STUDENTS));
+          saveStudents();
+          renderTable();
+          showToast('15명의 학생 데이터로 초기화되었습니다.', '🔄');
+        }
+      );
+    }
+
+    /**
+     * 8. 토스트 알림 및 커스텀 확인창
+     */
+    let toastTimer = null;
+    function showToast(msg, icon = '✅') {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').textContent = msg;
+      document.getElementById('toastIcon').textContent = icon;
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2400);
+    }
+
+    function openCustomConfirm(title, desc, onConfirm) {
+      const modal = document.getElementById('confirmModal');
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmDesc').textContent = desc;
+      modal.classList.remove('hidden');
+
+      const okBtn = document.getElementById('confirmOkBtn');
+      const cancelBtn = document.getElementById('confirmCancelBtn');
+
+      const cleanup = () => {
+        modal.classList.add('hidden');
+      };
+
+      cancelBtn.onclick = cleanup;
+      okBtn.onclick = () => {
+        cleanup();
+        onConfirm();
+      };
+    }
+
+    // 페이지 로드 시 실행
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
